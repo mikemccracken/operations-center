@@ -64,7 +64,7 @@ func (p *serverPool) ensureStandalone(ctx context.Context, t *testing.T, tmpDir 
 
 	p.registerCleanup()
 
-	observed := mustObserveServers(t, p.names)
+	observed := mustObserveServers(ctx, t, p.names)
 	plan := planStandalone(names, p.names, observed, p.dirty)
 
 	for cluster, members := range plan.factoryReset {
@@ -91,7 +91,7 @@ func (p *serverPool) ensureStandalone(ctx context.Context, t *testing.T, tmpDir 
 		renameServers(t, plan.rename)
 	}
 
-	observed = mustObserveServers(t, p.names)
+	observed = mustObserveServers(ctx, t, p.names)
 	require.Equal(t, poolPlan{}, planStandalone(names, p.names, observed, p.dirty), "expect the servers %v to be ready and not clustered", names)
 
 	printServerList(t)
@@ -110,7 +110,7 @@ func (p *serverPool) ensureCluster(ctx context.Context, t *testing.T, tmpDir str
 
 	p.registerCleanup()
 
-	observed := mustObserveServers(t, p.names)
+	observed := mustObserveServers(ctx, t, p.names)
 	if !clusterReady(incusOSClusterName, names, observed, p.dirty) {
 		p.ensureStandalone(ctx, t, tmpDir, names)
 
@@ -208,22 +208,61 @@ type observedServer struct {
 	record   serverRecord
 }
 
-func mustObserveServers(t *testing.T, names []string) map[string]observedServer {
+// hostnameWaitTimeout bounds the wait for a running VM to report its hostname.
+const hostnameWaitTimeout = 2 * time.Minute
+
+func mustObserveServers(ctx context.Context, t *testing.T, names []string) map[string]observedServer {
 	t.Helper()
 
-	instancesResp := mustRun(t, `incus list -f json | jq -c '[ .[] | { name: .name, status: .status, hostname: (.state.os_info.hostname // "") } ]'`)
+	timeoutCtx, cancel := context.WithTimeout(ctx, strechedTimeout(hostnameWaitTimeout))
+	defer cancel()
 
-	var instances []poolInstance
-	err := json.Unmarshal([]byte(instancesResp.OutputTrimmed()), &instances)
-	require.NoError(t, err)
+	for {
+		instancesResp := mustRun(t, `incus list -f json | jq -c '[ .[] | { name: .name, status: .status, hostname: (.state.os_info.hostname // "") } ]'`)
 
-	recordsResp := mustRun(t, `../bin/operations-center.linux.%s provisioning server list -f json | jq -c '[ .[] | select(.server_type == "incus") ]'`, cpuArch)
+		var instances []poolInstance
+		err := json.Unmarshal([]byte(instancesResp.OutputTrimmed()), &instances)
+		require.NoError(t, err)
 
-	var records []serverRecord
-	err = json.Unmarshal([]byte(recordsResp.OutputTrimmed()), &records)
-	require.NoError(t, err)
+		recordsResp := mustRun(t, `../bin/operations-center.linux.%s provisioning server list -f json | jq -c '[ .[] | select(.server_type == "incus") ]'`, cpuArch)
 
-	return observeServers(names, instances, records)
+		var records []serverRecord
+		err = json.Unmarshal([]byte(recordsResp.OutputTrimmed()), &records)
+		require.NoError(t, err)
+
+		observed := observeServers(names, instances, records)
+
+		// A VM reports its hostname only while its incus agent answers. Without it,
+		// a record named by the hostname is not matched and the server is reinstalled.
+		unmatched := unmatchedWithoutHostname(names, observed)
+		if len(unmatched) == 0 {
+			return observed
+		}
+
+		select {
+		case <-timeoutCtx.Done():
+			t.Logf("The running VMs %v report no hostname, so their records can not be matched", unmatched)
+
+			return observed
+
+		case <-time.After(5 * time.Second):
+		}
+	}
+}
+
+// unmatchedWithoutHostname returns the servers with a running VM, which reports
+// no hostname, and without a record carrying their name.
+func unmatchedWithoutHostname(names []string, observed map[string]observedServer) []string {
+	var unmatched []string
+
+	for _, name := range names {
+		server := observed[name]
+		if server.instance.Status == instanceStatusRunning && server.instance.Hostname == "" && server.record.Name == "" {
+			unmatched = append(unmatched, name)
+		}
+	}
+
+	return unmatched
 }
 
 // observeServers matches the VMs of the given servers with their records. A

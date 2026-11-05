@@ -328,7 +328,8 @@ For standalone servers, the pool decides for each server (see
 * A server, which is ready, not clustered and registered with the name of its
   VM, is used as it is.
 * A server, which registered with the hostname of its VM, is renamed. A server
-  does this after a factory reset.
+  does this after a factory reset. A VM reports its hostname only while its
+  incus agent answers, so the pool waits a while for a missing hostname.
 * A ready member of a cluster is recycled with a factory reset of the cluster.
   This takes about half the time of an install. The pool renames all the
   members after the reset.
