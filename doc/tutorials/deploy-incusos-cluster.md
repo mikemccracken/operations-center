@@ -320,13 +320,6 @@ operations-center provisioning token add --description "IncusOS Cluster Tutorial
 operations-center provisioning token list
 ```
 
-```{note}
-By default, IncusOS will prefer IPv6 connectivity if available and after the
-installation, Incus will only be available on the IPv6 address by default. If
-you want to use IPv4 or both instead, you can create a seed file with network
-configuration to enable Incus management an all IP addresses.
-```
-
 Create a seed file `pre-seed.yaml` for the pre-seeded installation ISO with the
 following content:
 
@@ -341,23 +334,6 @@ network:
       - dhcp4
       - dhcp6
       - slaac
-incus:
-  version: "1"
-  preseed:
-    config:
-      core.https_address: ":8443"
-```
-
-Optionally add the OIDC client configuration in the `incus.preseed.config` section:
-
-```yaml
-incus:
-  preseed:
-    config:
-      oidc.claim: "preferred_username"
-      oidc.client.id: "<your_client_id>"
-      oidc.issuer: "https://sso.linuxcontainers.org"
-      oidc.scopes: "openid,offline_access"
 ```
 
 Now get the pre-seeded installation ISO (this process may take a while):
