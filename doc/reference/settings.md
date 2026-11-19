@@ -67,7 +67,7 @@ client. At least one certificate with full access is still required.
 | :---             | :---                                                       | :---     | :---    |
 | `oidc.issuer`    | OIDC issuer                                                | string   |         |
 | `oidc.client_id` | OIDC client ID used for communication with OIDC issuer     | string   |         |
-| `oidc.scope`     | Scopes to be requested                                     | string   |         |
+| `oidc.scopes`    | Scopes to be requested                                     | string   |         |
 | `oidc.audience`  | Audience the OIDC tokens should be verified against        | string   |         |
 | `oidc.claim`     | Claim which should be used to identify the user or subject | string   |         |
 
