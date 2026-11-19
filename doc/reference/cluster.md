@@ -75,7 +75,7 @@ cluster member to the added servers. This applies to the CLI and to the UI. To
 skip the copy, set the `--copy-services-config` flag to `false`:
 
 ```bash
-operations-center cluster add-servers my-cluster --server-names new-server --copy-services-config=false
+operations-center provisioning cluster add-servers my-cluster --server-names new-server --copy-services-config=false
 ```
 
 Without the copy, you must configure the services on the added servers
