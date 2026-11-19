@@ -218,6 +218,10 @@ Replace `<operations-center-ip>` with the IP address you noted down earlier.
 While adding the new remote, `operations-center` CLI will prompt you to confirm
 the server certificate fingerprint.
 
+The commands below use the configuration directory of the `operations-center`
+CLI on Linux. For other operating systems, see
+[Remote access](../getting-started/access.md#remote-access-command-line).
+
 ```shell
 mkdir -p ~/.config/operations-center
 cp ~/.config/incus/client.* ~/.config/operations-center/

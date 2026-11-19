@@ -33,11 +33,23 @@ generated that must be trusted by the Operations Center service:
 Received authentication mismatch: got "untrusted", expected "tls". Ensure the server trusts the client fingerprint "653f014cbd7a7135c21414884283a50f2dd8e117943e4593638d72824596b268"
 ```
 
+The CLI tool stores the keypair (`client.crt` and `client.key`) in its
+configuration directory. The location depends on the operating system:
+
+- Linux: `~/.config/operations-center` (or
+  `$XDG_CONFIG_HOME/operations-center`, if `XDG_CONFIG_HOME` is set)
+- MacOS: `~/Library/Application Support/operations-center`
+- Windows: `%AppData%\operations-center`
+
+Set the environment variable `OPERATIONS_CENTER_CONF` to use a different
+directory.
+
 This certificate should be added to the `trusted_tls_client_cert_fingerprints`
 list with `operations-center system security edit` from a client, that is
 already trusted, for the remote CLI to properly function.
 
-Alternatively, the full X509 PEM encoded certificate (`~/.config/operations-center/client.crt`)
+Alternatively, the full X509 PEM encoded certificate (`client.crt` in the
+configuration directory)
 can be added to the `trusted_tls_client_certificates` list. Operations Center
 derives the fingerprint from it on load and additionally passes the certificate
 on to the servers and clusters it deploys, so the same client also gets access to
@@ -109,7 +121,8 @@ The Operations Center UI is also available for web access.
 
 For this to work, a client certificate trusted by Operations Center must be
 imported as a user certificate in your web browser. The remote CLI keypair
-generated in `~/.config/operations-center` can be used for this purpose.
+generated in the configuration directory of the CLI tool can be used for this
+purpose.
 
 The exact process to do this varies between browsers and operating
 systems, but generally involves generating a PKCS#12 certificate from
