@@ -100,7 +100,7 @@ not really useful as filter criteria and are only listed here for completeness.
 * `format`: Version of the update index file format, currently `1.0`
 * `channels`: Channels the update is part of, during retrieval of the update this is always the default channel
 * `changelog`: Content of the changelog
-* `update_status`: state from Operations Center point of view, if the update is `ready` or `pending`; when the filtering is applied, the updates are never `ready`
+* `status`: state from Operations Center point of view, if the update is `ready` or `pending`; when the filtering is applied, the updates are never `ready`
 * `url`: Source URL of the update
 
 ### File level filters
@@ -113,11 +113,11 @@ They allow filtering of update files based on their metadata.
 | Property       | Description                             | Example                                                                                                                                                                      |
 | :---           | :---                                    | :---                                                                                                                                                                         |
 | `architecture` | Architecture the update file applies to | `x86_64`, `aarch64`                                                                                                                                                          |
-| `component`    | Component of the update file            | `os`, `incus`, `incus-ceph`, `incus-linstor`, `operations-center`, `migration-manger`, `debug`                                                                               |
+| `component`    | Component of the update file            | `os`, `incus`, `incus-ceph`, `incus-linstor`, `operations-center`, `migration-manager`, `debug`                                                                              |
 | `filename`     | Name of the update file                 | `x86_64/IncusOS_202511201340.efi.gz`                                                                                                                                         |
 | `sha256`       | SHA256 checksum of the update file      | `26705d5d610a8f450d92e073ac0f691197c16c8fbcbd0a3cf71e13fea93f54b2`                                                                                                           |
 | `size`         | Size of the update file in bytes        | `12345678`                                                                                                                                                                   |
-| `type`         | Type of the update file                 | `image-raw`, `image-iso`, `image-manifest`, `changelog`, `update-efi`, `update-usr`, `update-usr-verity`, `update-usr-verity-signature`, `udpate-secure-boot`, `application` |
+| `type`         | Type of the update file                 | `image-raw`, `image-iso`, `image-manifest`, `changelog`, `update-efi`, `update-usr`, `update-usr-verity`, `update-usr-verity-signature`, `update-secureboot`, `application`  |
 
 ### Prepare manual updates
 
