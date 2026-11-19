@@ -78,9 +78,9 @@ the following status details:
 | `deploying`    | `attaching installation media` | Ejecting stale media and attaching the installation media         |
 | `deploying`    | `installing`                   | The server is running the first stage of the installation         |
 | `deploying`    | `finalizing`                   | Ejecting the media and waiting for the registration               |
-| `deploying`    | `canceling`                    | Ejecting the media and powering the server off after a cancel     |
+| `deploying`    | `cancelling`                   | Ejecting the media and powering the server off after a cancel     |
 | `unregistered` | `deployment failed`            | The deployment failed, nothing has been cleaned up                |
-| `unregistered` | `deployment canceled`          | The deployment has been canceled                                  |
+| `unregistered` | `deployment cancelled`         | The deployment has been canceled                                  |
 
 A successful deployment ends with the server registering itself, so it continues
 its life in status `pending` and eventually graduating to `ready`. A failed
