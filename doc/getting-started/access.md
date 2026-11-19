@@ -14,10 +14,10 @@ example.
 
 The CLI tool can connect to an Operations Center service over the network by
 registering a remote. Here is a sample registration of a remote named `m1` at
-address `https://192.0.2.100:443`:
+address `https://192.0.2.100:8443`:
 
 ```shell
-$ operations-center remote add "m1" "https://192.0.2.100:443" --auth-type "tls"
+$ operations-center remote add "m1" "https://192.0.2.100:8443" --auth-type "tls"
 Server presented an untrusted TLS certificate with SHA256 fingerprint 80d569e9244a421f3a3d60d46631eb717f8a0a480f2f23ee729a4c1c016875f7. Is this the correct fingerprint? (yes/no) [default=no]: yes
 
 $ operations-center remote switch "m1"
